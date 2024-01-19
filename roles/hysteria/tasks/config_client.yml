@@ -1,0 +1,21 @@
+---
+- name: Configure Hysteria Client
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create Hysteria Client configuration directory
+      ansible.builtin.file:
+        state: directory
+        path: '{{ hysteria_client_config_dir }}'
+        mode: '755'
+        owner: root
+        group: root
+
+    - name: Configure Hysteria Client
+      ansible.builtin.template:
+        src: hysteria.client.j2
+        dest: '{{ hysteria_client_config_dir }}/config.yaml'
+        owner: root
+        group: root
+        mode: '0644'

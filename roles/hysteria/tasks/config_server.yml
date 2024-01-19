@@ -1,0 +1,81 @@
+---
+- name: Configure Hysteria server
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create Hysteria configuration directory
+      ansible.builtin.file:
+        state: directory
+        path: '{{ hysteria_config_dir }}'
+        mode: '755'
+        owner: root
+        group: root
+
+    - name: Configure Hysteria
+      ansible.builtin.copy:
+        content: |
+           listen: :443
+
+#use ACME to automatically obtain a TLS certificate for domain
+          #acme:
+            #domains:
+             # - your.domain.net
+            #email: your@email.com
+          tls:
+            cert: /etc/ssl/certs
+            key: /etc/ssl/private
+
+          auth:
+            type: password
+            password: RZhuNfVtgQgQuPInznsiygIq
+
+          masquerade:
+            type: proxy
+            proxy:
+              url: https://news.ycombinator.com/
+              rewriteHost: true
+          
+          obfs:
+            type: salamander
+            salamander:
+              password: passwd
+        dest: '{{ hysteria_lib_dir }}/config.yaml'
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure Hysteria server
+      ansible.builtin.copy:
+        content: |
+          # Specify the multi-port address format
+          address: example.com:1234,5678,9012
+
+          # Or use port range
+          # address: example.com:20000-50000
+
+          # Or mix both formats
+          # address: example.com:1234,5000-6000,7044,8000-9000
+
+          # Configure hopInterval in the transport section
+          transport:
+            udp:
+              hopInterval: 30s
+        dest: '{{ hysteria_lib_dir }}/config.yaml'
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure port redirection with nftables
+      ansible.builtin.nftables:
+        rules:
+          prerouting:
+            udp dport 20000-50000 redirect to :443
+
+    
+    - name: Configure port redirection with iptables
+      ansible.builtin.shell:
+        cmd: "iptables -t nat -A PREROUTING -i eth0 -p udp --dport 20000:50000 -j DNAT --to-destination :443"
+        # For IPv6
+        # cmd: "ip6tables -t nat -A PREROUTING -i eth0 -p udp --dport 20000:50000 -j DNAT --to-destination :443"
+      become: yes

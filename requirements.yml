@@ -1,0 +1,23 @@
+# Установка роли из Ansible Galaxy
+---
+roles:
+  - name: ansible
+    version: 8.5.0
+  - name: tls-cert
+  #If you already have a certificate to install:
+#- hosts: all
+  #roles:
+    #- tls-cert
+  #vars:
+    #- TLS_BYO_PRIVKEY_SRC: 'example.com.key'
+    #- TLS_BYO_CERT_SRC: 'example.com.crt'
+    #- TLS_BYO_CACHAIN_SRC: 'example.com.cachain.crt'
+
+#If you want to use Let's Encrypt (example Nginx web server):
+#- hosts: all
+  #roles:
+    #- tls-cert
+  #vars:
+    #- TLS_LETSENCRYPT_ENABLE: 'true'
+    #- TLS_LETSENCRYPT_HTTPS_SERVICE: 'nginx'
+    #- TLS_LETSENCRYPT_EMAIL: 'dont@spam.me'

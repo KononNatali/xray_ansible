@@ -1,0 +1,30 @@
+---
+- name: Install Hysteria
+  ansible.builtin.include_tasks: install.yaml
+
+- name: Configure Hysteria server
+  ansible.builtin.include_tasks: config_server.yaml
+
+- name: Reload systemd to recognize the Hysteria service
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start Hysteria server service
+  ansible.builtin.systemd:
+    name: hysteria-server
+    state: started
+  become: yes
+
+- name: Enable Hysteria server service at boot
+  ansible.builtin.systemd:
+    name: hysteria-server
+    enabled: yes
+  become: yes
+
+- name: View Hysteria server service journal
+  ansible.builtin.command:
+    cmd: "journalctl -u hysteria-server.service"
+  become: yes
+
+- name: Configure Hysteria client
+  ansible.builtin.include_tasks: config_client.yaml

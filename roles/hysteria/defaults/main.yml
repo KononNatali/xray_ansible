@@ -1,0 +1,4 @@
+hysteria_lib_dir: /var/lib/ansible-hysteria
+ansible_user: hysteria
+hysteria_config_dir: /etc/hysteria
+hysteria_client_config_dir: /etc/hysteria-client

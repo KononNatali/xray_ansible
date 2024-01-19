@@ -1,0 +1,47 @@
+server: example.com
+
+auth: some_password
+
+tls:
+  sni: another.example.com
+  insecure: false
+  pinSHA256: BA:88:45:17:A1...
+
+transport:
+  type: udp
+  udp:
+    hopInterval: 30s
+
+obfs:
+  type: salamander
+  salamander:
+    password: passwd
+
+quic:
+  initStreamReceiveWindow: 8388608
+  maxStreamReceiveWindow: 8388608
+  initConnReceiveWindow: 20971520
+  maxConnReceiveWindow: 20971520
+  maxIdleTimeout: 30s
+  keepAlivePeriod: 10s
+  disablePathMTUDiscovery: false
+
+bandwidth:
+  up: 100 mbps
+  down: 200 mbps
+
+fastOpen: true
+
+lazy: true
+
+socks5:
+  listen: 127.0.0.1:1080
+  username: user
+  password: pass
+  disableUDP: false
+
+http:
+  listen: 127.0.0.1:8080
+  username: 
+  password: 
+  realm:

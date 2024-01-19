@@ -1,0 +1,48 @@
+---
+- name: Install or update Hysteria
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: full
+        autoremove: yes
+        autoclean: yes
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: Install curl
+      apt:
+        name: curl
+        state: present
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: Create directories
+      ansible.builtin.file:
+        state: directory
+        path: '{{ item.path }}'
+        mode: '{{ item.mode | default("700") }}'
+        owner: root
+        group: root
+      loop:
+        - path: '{{ hysteria_lib_dir }}'
+          mode: '755'
+
+    - name: Download install script to user's home directory
+      get_url:
+        url: https://get.hy2.sh/install_server.sh
+        dest: "{{ hysteria_lib_dir }}/install_server.sh"
+        mode: '0755'
+      become_user: "{{ ansible_user }}"
+      become: yes
+
+    - name: Run install script with sudo
+      shell: "sudo {{ hysteria_lib_dir }}/install_server.sh"
+      args:
+        chdir: "{{ hysteria_lib_dir }}"
+
+    #- name: Install or update to a specific version
+      #shell: "bash <(curl -fsSL https://get.hy2.sh/) --version v2.2.3"
+      #args:
+        #creates: "/opt/hysteria"  # Проверяем, что Hysteria не установлено с указанной версией
+      #when: "'v2.2.3' in hysteria_version.stdout"  # Условие для выполнения задачи при указанной версии

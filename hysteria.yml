@@ -1,0 +1,6 @@
+---
+- name: Set up Hysteria
+  hosts: all_servers
+  become: true
+  roles:
+    - hysteria

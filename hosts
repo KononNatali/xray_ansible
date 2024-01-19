@@ -1,0 +1,7 @@
+[all_servers]
+srvubunt1 ansible_host=192.168.14.144
+srvubunt2 ansible_host=192.168.14.142
+
+[servers_all:vars]
+ansible_port=22
+ansible_user=sysops
